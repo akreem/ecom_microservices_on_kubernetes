@@ -80,7 +80,10 @@ class ProductDetailsView(RetrieveAPIView):
     
     def get(self, request, slug):
         product = get_object_or_404(Product, slug=slug)
-        return render(request, 'product_details.html', {'product': product})
+        return render(request, 'product_details.html', {
+            'product': product,
+            'auth_base_url': settings.AUTH_PUBLIC_URL,
+        })
     
 
 

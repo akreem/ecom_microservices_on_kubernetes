@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,14 +21,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-w0^uu41_nxf$_ysauzgadab#hsh4afwovos-vcn&k09#$jropf'
+SECRET_KEY = os.getenv(
+    'DJANGO_SECRET_KEY',
+    'django-insecure-w0^uu41_nxf$_ysauzgadab#hsh4afwovos-vcn&k09#$jropf',
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DJANGO_DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '*').split(',')
 
-PRODUCT_SERVICE_URL = 'http://212.2.245.71:8012/prd/'
+PRODUCT_SERVICE_URL = os.getenv('PRODUCT_SERVICE_URL', 'http://products-app:8012/prd/')
 
 # Application definition
 
@@ -55,7 +59,7 @@ REST_FRAMEWORK = {
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://redis:6379/1",
+        "LOCATION": os.getenv("REDIS_URL", "redis://redis:6379/1"),
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
@@ -100,14 +104,12 @@ WSGI_APPLICATION = 'cart.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'civo',
-        'PASSWORD': 'RhkVeBbgJYfDycGlVUbPGN9F',
-        'HOST': '212.2.246.94',
-        'PORT': '5432',
-        'OPTIONS': {
-            'sslmode': 'require',
-        },
+        'NAME': os.getenv('POSTGRES_DB', 'postgres'),
+        'USER': os.getenv('POSTGRES_USER', 'microstore'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'microstore-password'),
+        'HOST': os.getenv('POSTGRES_HOST', 'postgres'),
+        'PORT': os.getenv('POSTGRES_PORT', '5432'),
+        'OPTIONS': {'sslmode': os.getenv('POSTGRES_SSLMODE', 'disable')},
     }
 }
 

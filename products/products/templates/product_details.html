@@ -60,7 +60,7 @@
             // Function to fetch user details using user_id
             function fetchUserDetails(user_id) {
                 return $.ajax({
-                    url: `http://20.199.21.250:8001/auth/user/${user_id}/`,
+                    url: `{{ auth_base_url|default:'' }}/auth/user/${user_id}/`,
                     type: 'GET',
                     headers: {
                         'Authorization': `Bearer ${getToken()}`
@@ -98,7 +98,7 @@
                 const password = $('#password').val();
 
                 $.ajax({
-                    url: 'http://20.199.21.250:8001/auth/login/',
+                    url: "{{ auth_base_url|default:'' }}/auth/login/",
                     type: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify({ username, password }),

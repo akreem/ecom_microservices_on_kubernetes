@@ -1,0 +1,99 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: auth-app-migrate
+  namespace: microstore
+  labels:
+    app.kubernetes.io/name: auth-app
+    app.kubernetes.io/component: migration
+    app.kubernetes.io/part-of: microstore
+spec:
+  backoffLimit: 6
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: migrate
+          image: akreem/micro_auth_app:v1.2
+          imagePullPolicy: IfNotPresent
+          command: ["python", "manage.py", "migrate", "--noinput"]
+          envFrom:
+            - configMapRef:
+                name: app-config
+            - secretRef:
+                name: app-secret
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: products-app-migrate
+  namespace: microstore
+  labels:
+    app.kubernetes.io/name: products-app
+    app.kubernetes.io/component: migration
+    app.kubernetes.io/part-of: microstore
+spec:
+  backoffLimit: 6
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: migrate
+          image: akreem/micro_products:v2.0
+          imagePullPolicy: IfNotPresent
+          command: ["sh", "-c", "python manage.py migrate --noinput && python create_superuser.py"]
+          envFrom:
+            - configMapRef:
+                name: app-config
+            - secretRef:
+                name: app-secret
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: cart-app-migrate
+  namespace: microstore
+  labels:
+    app.kubernetes.io/name: cart-app
+    app.kubernetes.io/component: migration
+    app.kubernetes.io/part-of: microstore
+spec:
+  backoffLimit: 6
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: migrate
+          image: akreem/micro_cart_app:v1.0
+          imagePullPolicy: IfNotPresent
+          command: ["python", "manage.py", "migrate", "--noinput"]
+          envFrom:
+            - configMapRef:
+                name: app-config
+            - secretRef:
+                name: app-secret
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: orders-app-migrate
+  namespace: microstore
+  labels:
+    app.kubernetes.io/name: orders-app
+    app.kubernetes.io/component: migration
+    app.kubernetes.io/part-of: microstore
+spec:
+  backoffLimit: 6
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: migrate
+          image: akreem/micro_orders_app:v1.0
+          imagePullPolicy: IfNotPresent
+          command: ["python", "manage.py", "migrate", "--noinput"]
+          envFrom:
+            - configMapRef:
+                name: app-config
+            - secretRef:
+                name: app-secret

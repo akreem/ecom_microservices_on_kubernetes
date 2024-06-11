@@ -15,6 +15,7 @@ from rest_framework.views import APIView
 from django.core.cache import cache
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from django.shortcuts import redirect
+import requests
 
 
 
@@ -107,7 +108,7 @@ class LoginView(generics.GenericAPIView):
                 'Authorization': f'Bearer {str(refresh.access_token)}',
                 'Content-Type': 'application/json'
             }
-            cart_migration_url = 'http://20.199.21.250:8002/api/cart/migrate/'
+            cart_migration_url = settings.CART_MIGRATION_URL
             try:
                 requests.post(cart_migration_url, headers=headers, json={'session_id': session_id})
             except requests.exceptions.RequestException as e:

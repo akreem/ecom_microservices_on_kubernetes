@@ -1,10 +1,12 @@
 FROM python:3.9-slim
 
 ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE 1
 
-RUN mkdir /app
 WORKDIR /app
 
 COPY . .
 
-RUN pip3 install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+CMD ["gunicorn", "auth.wsgi:application", "--bind", "0.0.0.0:8001"]

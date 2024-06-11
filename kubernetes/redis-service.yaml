@@ -2,13 +2,16 @@ apiVersion: v1
 kind: Service
 metadata:
   name: redis
+  namespace: microstore
   labels:
-    app: redis
+    app.kubernetes.io/name: redis
+    app.kubernetes.io/part-of: microstore
 spec:
-  selector:
-    app: redis
-  ports:
-    - protocol: TCP
-      port: 6379
-      targetPort: 6379
   type: ClusterIP
+  selector:
+    app.kubernetes.io/name: redis
+  ports:
+    - name: redis
+      protocol: TCP
+      port: 6379
+      targetPort: redis

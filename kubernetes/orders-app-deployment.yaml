@@ -1,44 +1,53 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    kompose.cmd: kompose convert -f docker-compose.yml
-    kompose.version: 1.33.0 (3ce457399)
-  labels:
-    io.kompose.service: orders-app
   name: orders-app
+  namespace: microstore
+  labels:
+    app.kubernetes.io/name: orders-app
+    app.kubernetes.io/component: api
+    app.kubernetes.io/part-of: microstore
 spec:
   replicas: 2
   selector:
     matchLabels:
-      io.kompose.service: orders-app
+      app.kubernetes.io/name: orders-app
   strategy:
-    type: Recreate
+    type: RollingUpdate
   template:
     metadata:
-      annotations:
-        kompose.cmd: kompose convert -f docker-compose.yml
-        kompose.version: 1.33.0 (3ce457399)
       labels:
-        io.kompose.network/micro-default: "true"
-        io.kompose.service: orders-app
+        app.kubernetes.io/name: orders-app
+        app.kubernetes.io/component: api
+        app.kubernetes.io/part-of: microstore
     spec:
-      initContainers:
-      - name: init-orders
-        image: akreem/micro_orders_app:v1.0
-        command: ["bash", "-c"]
-        args:
-          - >
-            python manage.py makemigrations &&
-            python manage.py migrate
-
       containers:
-      - name: orders-app
-        image: akreem/micro_orders_app:v1.0
-        command: ["bash", "-c"]
-        args: ["python ./manage.py runserver 0.0.0.0:8004"]
-        ports:
-        - containerPort: 8004
-          protocol: TCP
-      restartPolicy: Always
-
+        - name: orders-app
+          image: akreem/micro_orders_app:v1.0
+          imagePullPolicy: IfNotPresent
+          command: ["gunicorn", "orders.wsgi:application", "--bind", "0.0.0.0:8004", "--workers", "2"]
+          ports:
+            - name: http
+              containerPort: 8004
+          envFrom:
+            - configMapRef:
+                name: app-config
+            - secretRef:
+                name: app-secret
+          readinessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi

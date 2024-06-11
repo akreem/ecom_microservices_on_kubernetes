@@ -27,12 +27,15 @@ STATICFILES_DIRS = [
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-d-4lk%vu6!(-k0skl9jrofw#d#mv-of9%8fzzu4e7d(xqzu*@^'
+SECRET_KEY = os.getenv(
+    'DJANGO_SECRET_KEY',
+    'django-insecure-d-4lk%vu6!(-k0skl9jrofw#d#mv-of9%8fzzu4e7d(xqzu*@^',
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DJANGO_DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '*').split(',')
 
 
 # Application definition
@@ -99,14 +102,12 @@ WSGI_APPLICATION = 'api.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'civo',
-        'PASSWORD': 'RhkVeBbgJYfDycGlVUbPGN9F',
-        'HOST': '212.2.246.94',
-        'PORT': '5432',
-        'OPTIONS': {
-            'sslmode': 'require',
-        },
+        'NAME': os.getenv('POSTGRES_DB', 'postgres'),
+        'USER': os.getenv('POSTGRES_USER', 'microstore'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'microstore-password'),
+        'HOST': os.getenv('POSTGRES_HOST', 'postgres'),
+        'PORT': os.getenv('POSTGRES_PORT', '5432'),
+        'OPTIONS': {'sslmode': os.getenv('POSTGRES_SSLMODE', 'disable')},
     }
 }
 
@@ -156,6 +157,7 @@ USE_TZ = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+AUTH_PUBLIC_URL = os.getenv('AUTH_PUBLIC_URL', '')
 
 
 REST_FRAMEWORK = {

@@ -1,0 +1,26 @@
+drafts/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Local databases and generated media
+db.sqlite3
+*.sqlite3
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Tooling / OS
+.DS_Store
+Thumbs.db
+kubectl
+kubectl.sha256

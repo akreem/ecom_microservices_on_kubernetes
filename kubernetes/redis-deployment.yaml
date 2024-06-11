@@ -2,27 +2,42 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: redis
+  namespace: microstore
   labels:
-    app: redis
+    app.kubernetes.io/name: redis
+    app.kubernetes.io/part-of: microstore
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: redis
+      app.kubernetes.io/name: redis
   template:
     metadata:
       labels:
-        app: redis
+        app.kubernetes.io/name: redis
+        app.kubernetes.io/part-of: microstore
     spec:
       containers:
-      - name: redis
-        image: redis:latest
-        ports:
-        - containerPort: 6379
-        resources:
-          requests:
-            memory: "64Mi"
-            cpu: "250m"
-          limits:
-            memory: "256Mi"
-            cpu: "500m"
+        - name: redis
+          image: redis:7.2-alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: redis
+              containerPort: 6379
+          readinessProbe:
+            tcpSocket:
+              port: redis
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: redis
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 100m
+            limits:
+              memory: 256Mi
+              cpu: 500m

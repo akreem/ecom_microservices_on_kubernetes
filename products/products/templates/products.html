@@ -52,7 +52,7 @@
             // Function to fetch user details using user_id
             function fetchUserDetails(user_id) {
                 return $.ajax({
-                    url: `http://20.199.21.250:8001/auth/user/${user_id}/`,
+                    url: `{{ auth_base_url|default:'' }}/auth/user/${user_id}/`,
                     type: 'GET',
                     headers: {
                         'Authorization': `Bearer ${getToken()}`
@@ -87,7 +87,7 @@
             // Get products and include the JWT token in the request
             function getProducts() {
                 $.ajax({
-                    url: 'http://20.199.21.250:8002/api/products/',
+                    url: '/api/products/',
                     type: 'GET',
                     success: function(data) {
                         // For each product in the JSON response
@@ -107,7 +107,7 @@
                         // Add a click handler to the "View Details" buttons
                         $('.details-btn').click(function() {
                             var slug = $(this).data('slug');
-                            window.location.href = `http://20.199.21.250:8002/product-details-page/${slug}/`;
+                            window.location.href = `/product-details-page/${slug}/`;
                         });
                     },
                     error: function(xhr, status, error) {
@@ -124,7 +124,7 @@
                 const password = $('#password').val();
 
                 $.ajax({
-                    url: 'http://20.199.21.250:8001/auth/login/',
+                    url: "{{ auth_base_url|default:'' }}/auth/login/",
                     type: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify({ username, password }),

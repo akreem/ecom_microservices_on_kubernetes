@@ -20,16 +20,19 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'npu-ca9=ftv&&!o&9iny4l+m^t@5&x4jfup8+khr#bkr4dv(6i'
+SECRET_KEY = os.getenv(
+    'DJANGO_SECRET_KEY',
+    'npu-ca9=ftv&&!o&9iny4l+m^t@5&x4jfup8+khr#bkr4dv(6i',
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DJANGO_DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '*').split(',')
 
 EXTERNAL_SERVICES = {
-    'USER_SERVICE_URL': 'http://212.2.246.145:8010/auth/user/',
-    'PRODUCT_SERVICE_URL': 'http://212.2.245.71:8012/prd/'
+    'USER_SERVICE_URL': os.getenv('USER_SERVICE_URL', 'http://auth-app:8010/auth/user/'),
+    'PRODUCT_SERVICE_URL': os.getenv('PRODUCT_SERVICE_URL', 'http://products-app:8012/prd/')
 }
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -87,14 +90,12 @@ WSGI_APPLICATION = 'orders.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'orders',
-        'USER': 'civo',
-        'PASSWORD': 'RhkVeBbgJYfDycGlVUbPGN9F',
-        'HOST': '212.2.246.94',
-        'PORT': '5432',
-        'OPTIONS': {
-            'sslmode': 'require',
-        },
+        'NAME': os.getenv('POSTGRES_DB', 'orders'),
+        'USER': os.getenv('POSTGRES_USER', 'microstore'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'microstore-password'),
+        'HOST': os.getenv('POSTGRES_HOST', 'postgres'),
+        'PORT': os.getenv('POSTGRES_PORT', '5432'),
+        'OPTIONS': {'sslmode': os.getenv('POSTGRES_SSLMODE', 'disable')},
     }
 }
 

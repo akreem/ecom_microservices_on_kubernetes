@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -26,12 +27,15 @@ STATICFILES_DIRS = [
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-27f+bg152ip5_(+n=7dvjhq8uoxs#lu@9#v%&(%559f$1f$u3-'
+SECRET_KEY = os.getenv(
+    'DJANGO_SECRET_KEY',
+    'django-insecure-27f+bg152ip5_(+n=7dvjhq8uoxs#lu@9#v%&(%559f$1f$u3-',
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DJANGO_DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '*').split(',')
 
 
 # Application definition
@@ -46,10 +50,10 @@ INSTALLED_APPS = [
     
 ]
 
-AUTHENTICATION_MICROSERVICE_URL='http://212.2.246.145:8010'
-PRODUCTS_MICROSERVICE_URL='http://212.2.245.71:8012'
-CART_MICROSERVICE_URL='http://212.2.241.10:8013'
-CHEKOUT_MICROSERVICE_URL='http://212.2.247.135:8014'
+AUTHENTICATION_MICROSERVICE_URL = os.getenv('AUTH_SERVICE_URL', 'http://auth-app:8010')
+PRODUCTS_MICROSERVICE_URL = os.getenv('PRODUCTS_SERVICE_URL', 'http://products-app:8012')
+CART_MICROSERVICE_URL = os.getenv('CART_SERVICE_URL', 'http://cart-app:8013')
+CHEKOUT_MICROSERVICE_URL = os.getenv('ORDERS_SERVICE_URL', 'http://orders-app:8014')
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

@@ -14,3 +14,4 @@ requests
 Pillow
 redis
 django-redis
+gunicorn==22.0.0

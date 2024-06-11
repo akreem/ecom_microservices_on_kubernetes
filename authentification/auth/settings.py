@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import datetime
+import os
 from pathlib import Path
 from django.conf.global_settings import DEFAULT_AUTO_FIELD
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,12 +21,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-@x+&e5_+40%zsfhrlv(9ip8f1ghv%e@m6-45pm6-e%vi6urt3e'
+SECRET_KEY = os.getenv(
+    'DJANGO_SECRET_KEY',
+    'django-insecure-@x+&e5_+40%zsfhrlv(9ip8f1ghv%e@m6-45pm6-e%vi6urt3e',
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DJANGO_DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '*').split(',')
 
 
 # Application definition
@@ -76,9 +80,6 @@ MIDDLEWARE = [
 
 CORS_ORIGIN_ALLOW_ALL = True  
 
-import os
-
-
 ROOT_URLCONF = 'auth.urls'
 
 TEMPLATES = [
@@ -106,21 +107,19 @@ WSGI_APPLICATION = 'auth.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'auth',
-        'USER': 'civo',
-        'PASSWORD': 'RhkVeBbgJYfDycGlVUbPGN9F',
-        'HOST': '212.2.246.94',
-        'PORT': '5432',
-        'OPTIONS': {
-            'sslmode': 'require',
-        },
+        'NAME': os.getenv('POSTGRES_DB', 'auth'),
+        'USER': os.getenv('POSTGRES_USER', 'microstore'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'microstore-password'),
+        'HOST': os.getenv('POSTGRES_HOST', 'postgres'),
+        'PORT': os.getenv('POSTGRES_PORT', '5432'),
+        'OPTIONS': {'sslmode': os.getenv('POSTGRES_SSLMODE', 'disable')},
     }
 }
 
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://redis:6379/1",
+        "LOCATION": os.getenv("REDIS_URL", "redis://redis:6379/1"),
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
@@ -129,6 +128,7 @@ CACHES = {
 
 # Cache timeout for token blacklist
 TOKEN_BLACKLIST_CACHE_TIMEOUT = 14400  # 1 hour (adjust as needed)
+CART_MIGRATION_URL = os.getenv('CART_MIGRATION_URL', 'http://cart-app:8013/api/cart/migrate/')
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
